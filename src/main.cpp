@@ -40,6 +40,7 @@
 #endif
 #include "./services/OswServiceManager.h"
 #include "./services/OswServiceTaskBLECompanion.h"
+#include "debug_scani2c.h"
 #include "hal/esp32/spiffs_filesystem.h"
 #include "services/OswServiceTaskMemMonitor.h"
 #include "services/OswServiceTasks.h"
@@ -55,7 +56,6 @@ OswAppSwitcher *watchFaceSwitcher = new OswAppSwitcher(BUTTON_1, SHORT_PRESS, fa
 
 void setup() {
   Serial.begin(115200);
-  srand(time(nullptr));
 
   // Load config as early as possible, to ensure everyone can access it.
   OswConfig::getInstance()->setup();
@@ -74,6 +74,7 @@ void setup() {
   hal->setupButtons();
   hal->setupSensors();
   hal->setupTime();
+  srand(time(nullptr)); //Moved down here to make sure we are always getting random sequences with a new seed!
 
   hal->setupDisplay();
 
@@ -82,6 +83,7 @@ void setup() {
 #ifdef DEBUG
   Serial.println("Setup Done");
 #endif
+
 }
 
 void loop() {
@@ -110,12 +112,11 @@ void loop() {
   if (delayedAppInit) {
     delayedAppInit = false;
 #ifdef GPS_EDITION
-    mainAppSwitcher->registerApp(new OswAppMap());
+    // mainAppSwitcher->registerApp(new OswAppMap());
 #endif
     // enable / sort your apps here:
     // tests
     // mainAppSwitcher->registerApp(new OswAppHelloWorld());
-    // mainAppSwitcher->registerApp(new OswAppPrintDebug());
     // games
     // mainAppSwitcher->registerApp(new OswAppSnakeGame());
     // tools
